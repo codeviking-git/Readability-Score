@@ -1,0 +1,130 @@
+package readability;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+public class Main {
+    public static int age(double score){
+        int result = (int)Math.round(Math.ceil(score));
+        int age = 0;
+        if(score <= 2){
+            age = result + 5;
+        }
+        else if(result == 3){
+            age = result + 6;
+        }
+        else if(result == 13){
+            age = result + 11;
+        }
+        else if(result >= 14){
+            age = result + 11;
+        }
+        else{
+            age = result + 6;
+        }
+        return age;
+    }
+    public static double syllableChecker(String text){
+       String result = text.replaceAll("e$", "").replaceAll("le", "a").replaceAll("[aeiouy]{2,}", "a").replaceAll("[^aeiouy]", "").replaceAll("[\\.\\?,!\\s]", "").replaceAll("[0-9]+", "a");
+       double result1 = result.length();
+       return result1;
+       }
+    public static double polySyllableChecker(String text){
+        double count = 0;
+        String[] words = text.split("[\\.\\?,!\\s]");
+        for(int i = 0; i<words.length; i++){
+            words[i] = words[i].replaceAll("e$", "").replaceAll("le", "a").replaceAll("[aeiouy]{2,}", "a").replaceAll("[0-9]+", "a");
+            if(words[i].matches("\\w*[aeiouy]\\w*[aeiouy]\\w*[aeiouy]\\w*")) count++;
+        }
+        return count;
+    }
+    public static double automatedReadabilityIndex(double characters, double words, double sentences){
+        double score = (4.71*(characters/words)) + (0.5*(words/sentences)) - 21.43;
+        score = (double)Math.round(score * 100) / 100;
+        return score;
+    }
+    public static double fleschKincaid(double words, double sentences, double syllables){
+        double score = (0.39*(words/sentences)) + (11.8*(syllables/words)) - 15.59;
+        score = (double)Math.round(score * 100) / 100;
+        return score;
+    }
+    public static double gobbledygook(double polysyllables, double sentences){
+        double determinant = Math.pow((polysyllables/sentences)*30, 0.5);
+        double score = 1.043*determinant + 3.1291;
+        score = (double)Math.round(score * 100) / 100;
+        return score;
+    }
+    public static double colemanLiau(double L, double S){
+        double score = ((0.0588 * L) - (0.296 * S) - 15.8);
+        score = (double)Math.round(score * 100) / 100;
+        return score;
+    }
+    public static double L(String text){
+         double noOfWords = text.split("[\\.\\?,!\\s]").length;
+         double noOfSentences = text.split("[\\.\\?!]\\s").length;
+        double number = (double)((noOfSentences/noOfWords)*100);
+        return number;
+    }
+    public static double S(String text){
+        double noOfWords = text.split("[\\.\\?,!\\s]").length;
+        double noOfCharacters = text.replaceAll("\\s","").length();
+        double number = (double)((noOfCharacters/noOfWords)*100);
+        return number;
+    }
+    public static void all(double ari, double fk, double smog, double CL){
+
+    }
+    public static void main(String[] args) {
+        File file = new File(args[0]);
+        String text = "";
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNext()) {
+                text += scanner.nextLine();
+            }
+            scanner.close();
+            System.out.println("The text is: ");
+            System.out.println(text);
+        } catch (FileNotFoundException e) {
+            System.out.println("No file found");
+        }
+        double words = text.split("\\s").length;
+        System.out.println("Words: "+(int)words);
+        double sentences = text.split("[.!?]+\\s*").length;
+        System.out.println("Sentences: "+(int)sentences);
+        double characters = text.replaceAll("\\s","").length();
+        System.out.println("Characters: "+(int)characters);
+        double syllables = syllableChecker(text);
+        System.out.println("Syllables: "+(int)syllables);
+        double polysyllables = polySyllableChecker(text);
+        System.out.println("Polysyllables: "+(int)polysyllables);
+        double ari = automatedReadabilityIndex(characters, words, sentences);
+        double fk = fleschKincaid(words, sentences, syllables);
+        double smog = gobbledygook(polysyllables, sentences);
+        double lavg = L(text);
+        double savg = S(text);
+        double CL = colemanLiau(lavg, savg);
+        Scanner s = new Scanner(System.in);
+        System.out.println("Enter the score you want to calculate (ARI, FK, SMOG, CL, all):");
+        String mode = s.nextLine();
+        switch (mode) {
+            case ("ARI"):
+                System.out.println("Automated Readability Index: "+ari+" (about "+age(ari)+"-year-olds).");
+                break;
+            case ("FK"):
+                System.out.println("Flesch–Kincaid readability tests: "+fk+" (about "+age(fk)+"-year-olds).");
+                break;
+            case ("SMOG"):
+                System.out.println("Simple Measure of Gobbledygook: "+smog+" (about "+age(smog)+"-year-olds).");
+                break;
+            case ("CL"):
+                System.out.println("Coleman–Liau index: "+CL+" (about "+age(CL)+"-year-olds).");
+                break;
+            default:
+                System.out.println("Automated Readability Index: "+ari+" (about "+age(ari)+"-year-olds).");
+                System.out.println("Flesch–Kincaid readability tests: "+fk+" (about "+age(fk)+"-year-olds).");
+                System.out.println("Simple Measure of Gobbledygook: "+smog+" (about "+age(smog)+"-year-olds).");
+                System.out.println("Coleman–Liau index: "+CL+" (about "+age(CL)+"-year-olds).");
+        }
+    }
+}
