@@ -1,0 +1,18 @@
+package readability;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        String input = s.nextLine();
+        float count = 1 + input.length() - input.replaceAll("\\s","").length();
+        //System.out.println(count);
+        float countPuncMarks = input.length() - input.replaceAll("[\\.\\?\\!]","").length();
+        //System.out.println(countPuncMarks);
+        float output = count/countPuncMarks;
+        if(output <= 10){
+            System.out.println("EASY");
+        }
+        else System.out.println("HARD");
+    }
+}
